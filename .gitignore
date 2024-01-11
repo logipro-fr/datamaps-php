@@ -1,0 +1,5 @@
+/var/
+/vendor/
+/.phpunit.cache/
+log/*
+!log/.gitignore

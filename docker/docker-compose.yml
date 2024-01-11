@@ -1,0 +1,30 @@
+services:
+  datamaps-php:
+    container_name: "datamaps-php"
+    image: datamaps-php:latest
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+      tags:
+        - latest
+    user: 1000:1000
+    volumes:
+      - ../../log:/var/datamaps/log
+      - "$PWD/..:/var/datamaps"
+      - "$PWD/..:$PWD/.."
+    working_dir: $PWD/..
+    networks:
+      - datamaps-network
+
+networks:
+  datamaps-network:
+    driver: bridge
+    name: datamaps-network
+    enable_ipv6: true
+    ipam:
+      config:
+        - subnet: fd00:1:20::/112
+          gateway: fd00:1:20::1
+
+volumes:
+  datamaps-db:

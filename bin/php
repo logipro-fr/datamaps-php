@@ -1,0 +1,9 @@
+#!/bin/sh
+
+DIR_VAR=../infra
+if [ ! -d "$DIR_VAR" ]; then
+    echo "L'infrastructure doit être installée. Peut être avez vous oublié de lancer ./install ?"
+    exit
+fi
+
+../infra/bin/php $@
