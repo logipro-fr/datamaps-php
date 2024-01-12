@@ -42,7 +42,7 @@ class DatamapsClient
     public function create(Map $map): Map
     {
         $data = $this->queryPOST(
-            "create", 
+            "create",
             json_encode([
                 "bounds" => $map->bounds,
                 "layers" => $map->layers
@@ -67,8 +67,8 @@ class DatamapsClient
     private function queryPOST(string $uriMethod, string $data): \stdClass
     {
         $stringifiedResponse = $this->getHttpClient()->request(
-            'POST', 
-            self::BASE_URI . $uriMethod, 
+            'POST',
+            self::BASE_URI . $uriMethod,
             [
                 "body" => $data
             ]
