@@ -15,7 +15,7 @@ class Map
      * @param array<array<float>> $bounds
      * @param array<Layer> $layers
      */
-    private function __construct(string $mapId, array $bounds, string $createdAt, array $layers)
+    public function __construct(string $mapId, array $bounds, string $createdAt, array $layers)
     {
         $this->mapId = $mapId;
         $this->bounds = $bounds;
