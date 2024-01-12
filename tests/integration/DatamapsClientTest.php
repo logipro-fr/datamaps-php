@@ -14,7 +14,7 @@ class DatamapsClientTest extends UnitDatamapsClientTest
 
     protected function getFailingClient(): DatamapsClient
     {
-        return new DatamapsClient();
+        return $this->getClient();
     }
 
     public function testCreate(): void

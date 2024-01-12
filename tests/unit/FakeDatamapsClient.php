@@ -14,7 +14,7 @@ use function Safe\json_encode;
 
 class FakeDatamapsClient
 {
-    private static Map $mapCreated;
+    private static Map $lastMapCreated;
 
     public static function makeMock(): DatamapsClient
     {
@@ -41,9 +41,9 @@ class FakeDatamapsClient
         $explodedUrl = explode("/", $url);
         $id = end($explodedUrl);
 
-        if (isset(self::$mapCreated)) {
-            if ($id == self::$mapCreated->mapId) {
-                return new MockResponse(self::makeSuccessfulResponse((array) self::$mapCreated));
+        if (isset(self::$lastMapCreated)) {
+            if ($id == self::$lastMapCreated->mapId) {
+                return new MockResponse(self::makeSuccessfulResponse((array) self::$lastMapCreated));
             }
         }
 
@@ -73,7 +73,7 @@ class FakeDatamapsClient
         /** @var \stdClass $object */
         $object = json_decode($options["body"]);
 
-        self::$mapCreated = new Map(
+        self::$lastMapCreated = new Map(
             "dm_map_MapCreatedJustBefore",
             $object->bounds,
             "2024-01-01T01:01:01+00:00",
@@ -82,8 +82,8 @@ class FakeDatamapsClient
 
         return new MockResponse(
             self::makeSuccessfulResponse([
-                "mapId" => self::$mapCreated->mapId,
-                "displayUrl" => DatamapsClient::BASE_URI . "display/" . self::$mapCreated->mapId
+                "mapId" => self::$lastMapCreated->mapId,
+                "displayUrl" => DatamapsClient::BASE_URI . "display/" . self::$lastMapCreated->mapId
             ])
         );
     }

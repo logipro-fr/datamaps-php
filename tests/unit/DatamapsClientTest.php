@@ -34,6 +34,22 @@ class DatamapsClientTest extends TestCase
         $this->assertNotEquals($maps[0]->mapId, $maps[1]->mapId);
     }
 
+    public function testCreate(): void
+    {
+        $map = new Map(
+            "irrelevant_willnotbeused",
+            [[42, -5], [50, 10]],
+            "irrelevant_willnotbeused",
+            []
+        );
+
+        $mapCreated = $this->getClient()->create($map);
+
+        $this->assertStringStartsWith("dm_map_", $mapCreated->mapId);
+        $this->assertSame([[42, -5], [50, 10]], $mapCreated->bounds);
+        $this->assertSame([], $mapCreated->layers);
+    }
+
     public function testCreateFailure(): void
     {
         $this->expectException(DatamapsRequestFailedException::class);
@@ -50,21 +66,5 @@ class DatamapsClientTest extends TestCase
         );
 
         $this->getFailingClient()->create($map);
-    }
-
-    public function testCreate(): void
-    {
-        $map = new Map(
-            "irrelevant_willnotbeused",
-            [[42, -5], [50, 10]],
-            "irrelevant_willnotbeused",
-            []
-        );
-
-        $mapCreated = $this->getClient()->create($map);
-
-        $this->assertStringStartsWith("dm_map_", $mapCreated->mapId);
-        $this->assertSame([[42, -5], [50, 10]], $mapCreated->bounds);
-        $this->assertSame([], $mapCreated->layers);
     }
 }
