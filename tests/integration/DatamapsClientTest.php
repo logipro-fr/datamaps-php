@@ -7,9 +7,14 @@ use DatamapsPHP\Tests\DatamapsClientTest as UnitDatamapsClientTest;
 
 class DatamapsClientTest extends UnitDatamapsClientTest
 {
-    public function setUp(): void
+    protected function getClient(): DatamapsClient
     {
-        $this->client = new DatamapsClient();
+        return new DatamapsClient();
+    }
+
+    protected function getFailingClient(): DatamapsClient
+    {
+        return new DatamapsClient();
     }
 
     public function testCreate(): void

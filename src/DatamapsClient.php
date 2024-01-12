@@ -11,11 +11,18 @@ use function Safe\json_encode;
 
 class DatamapsClient
 {
-    protected const BASE_URI = "https://accidentprediction.fr/datamaps/api/v1/";
+    public const BASE_URI = "https://accidentprediction.fr/datamaps/api/v1/";
 
-    protected function getHttpClient(): HttpClientInterface
-    {
-        return HttpClient::create();
+    private HttpClientInterface $httpClient;
+
+    public function __construct(
+        ?HttpClientInterface $httpClient = null
+    ) {
+        if ($httpClient == null) {
+            $this->httpClient = HttpClient::create();
+        } else {
+            $this->httpClient = $httpClient;
+        }
     }
 
     public function get(string $mapId): Map
@@ -56,7 +63,7 @@ class DatamapsClient
 
     private function queryGET(string $uriMethod): \stdClass
     {
-        $stringifiedResponse = $this->getHttpClient()->request('GET', self::BASE_URI . $uriMethod)->getContent();
+        $stringifiedResponse = $this->httpClient->request('GET', self::BASE_URI . $uriMethod)->getContent();
 
         /** @var \stdClass $response */
         $response = json_decode($stringifiedResponse);
@@ -66,7 +73,7 @@ class DatamapsClient
 
     private function queryPOST(string $uriMethod, string $data): \stdClass
     {
-        $stringifiedResponse = $this->getHttpClient()->request(
+        $stringifiedResponse = $this->httpClient->request(
             'POST',
             self::BASE_URI . $uriMethod,
             [

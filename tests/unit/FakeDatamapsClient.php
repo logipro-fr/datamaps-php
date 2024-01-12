@@ -8,26 +8,15 @@ use DatamapsPHP\DTOs\Map;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_decode;
 use function Safe\json_encode;
 
-class FakeDatamapsClient extends DatamapsClient
+class FakeDatamapsClient
 {
     private static Map $mapCreated;
 
-    public function __construct(
-        private HttpClientInterface $httpClient
-    ) {
-    }
-
-    protected function getHttpClient(): HttpClientInterface
-    {
-        return $this->httpClient;
-    }
-
-    public static function makeMock(): self
+    public static function makeMock(): DatamapsClient
     {
         $callable = Closure::fromCallable(
             function (string $method, string $url, array $options): MockResponse {
@@ -42,12 +31,12 @@ class FakeDatamapsClient extends DatamapsClient
                 }
             }
         );
-        return new self(new MockHttpClient($callable));
+        return new DatamapsClient(new MockHttpClient($callable));
     }
 
     private static function responseToGet(string $url): MockResponse
     {
-        Assert::assertStringStartsWith(self::BASE_URI . "display/", $url);
+        Assert::assertStringStartsWith(DatamapsClient::BASE_URI . "display/", $url);
 
         $explodedUrl = explode("/", $url);
         $id = end($explodedUrl);
@@ -63,7 +52,7 @@ class FakeDatamapsClient extends DatamapsClient
 
     private static function responseToSearch(string $url): MockResponse
     {
-        Assert::assertStringStartsWith(self::BASE_URI . "search/", $url);
+        Assert::assertStringStartsWith(DatamapsClient::BASE_URI . "search/", $url);
 
         $explodedUrl = explode("/", $url);
         $amount = end($explodedUrl);
@@ -78,54 +67,25 @@ class FakeDatamapsClient extends DatamapsClient
     /** @param array<string> $options */
     private static function responseToCreate(string $url, array $options): MockResponse
     {
-        Assert::assertStringStartsWith(self::BASE_URI . "create", $url);
+        Assert::assertStringStartsWith(DatamapsClient::BASE_URI . "create", $url);
         Assert::assertArrayHasKey("body", $options);
 
         /** @var \stdClass $object */
         $object = json_decode($options["body"]);
 
-        if (self::objectIsWellBuilt($object)) {
-            self::$mapCreated = new Map(
-                "dm_map_MapCreatedJustBefore",
-                $object->bounds,
-                "2024-01-01T01:01:01+00:00",
-                $object->layers
-            );
+        self::$mapCreated = new Map(
+            "dm_map_MapCreatedJustBefore",
+            $object->bounds,
+            "2024-01-01T01:01:01+00:00",
+            $object->layers
+        );
 
-            return new MockResponse(
-                self::makeSuccessfulResponse([
-                    "mapId" => self::$mapCreated->mapId,
-                    "displayUrl" => self::BASE_URI . "display/" . self::$mapCreated->mapId
-                ])
-            );
-        } else {
-            return new MockResponse(
-                self::makeFailureResponse(
-                    403,
-                    "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found"
-                )
-            );
-        }
-    }
-
-    private static function objectIsWellBuilt(\stdClass $object): bool
-    {
-        $allValuesArePresent = isset($object->bounds) && isset($object->layers);
-        if ($allValuesArePresent) {
-            $bounds = $object->bounds;
-            $boundsIsCorrect =
-                is_array($bounds) && sizeof($bounds) == 2
-                && is_array($bounds[0]) && sizeof($bounds[0]) == 2
-                && is_array($bounds[1]) && sizeof($bounds[1]) == 2;
-            if ($boundsIsCorrect) {
-                $layers = $object->layers;
-                $layersIsCorrect = is_array($layers);
-                if ($layersIsCorrect) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return new MockResponse(
+            self::makeSuccessfulResponse([
+                "mapId" => self::$mapCreated->mapId,
+                "displayUrl" => DatamapsClient::BASE_URI . "display/" . self::$mapCreated->mapId
+            ])
+        );
     }
 
     /** @param array<mixed> $data */
@@ -158,5 +118,20 @@ class FakeDatamapsClient extends DatamapsClient
             "error_code" => $errorCode,
             "message" => $message
         ]);
+    }
+
+    public static function makeFailingMock(): DatamapsClient
+    {
+        $callable = Closure::fromCallable(
+            function (): MockResponse {
+                return new MockResponse(
+                    self::makeFailureResponse(
+                        403,
+                        "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found"
+                    )
+                );
+            }
+        );
+        return new DatamapsClient(new MockHttpClient($callable));
     }
 }

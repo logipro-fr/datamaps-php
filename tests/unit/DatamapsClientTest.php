@@ -9,23 +9,26 @@ use PHPUnit\Framework\TestCase;
 
 class DatamapsClientTest extends TestCase
 {
-    protected DatamapsClient $client;
-
-    public function setUp(): void
+    protected function getClient(): DatamapsClient
     {
-        $this->client = FakeDatamapsClient::makeMock();
+        return FakeDatamapsClient::makeMock();
+    }
+
+    protected function getFailingClient(): DatamapsClient
+    {
+        return FakeDatamapsClient::makeFailingMock();
     }
 
     public function testGet(): void
     {
-        $map = $this->client->get("dm_map_0043af51c6be58d357db18474bbf");
+        $map = $this->getClient()->get("dm_map_0043af51c6be58d357db18474bbf");
 
         $this->assertEquals("dm_map_0043af51c6be58d357db18474bbf", $map->mapId);
     }
 
     public function testSearch(): void
     {
-        $maps = $this->client->search(2);
+        $maps = $this->getClient()->search(2);
 
         $this->assertCount(2, $maps);
         $this->assertNotEquals($maps[0]->mapId, $maps[1]->mapId);
@@ -46,7 +49,7 @@ class DatamapsClientTest extends TestCase
             []
         );
 
-        $this->client->create($map);
+        $this->getFailingClient()->create($map);
     }
 
     public function testCreate(): void
@@ -58,7 +61,7 @@ class DatamapsClientTest extends TestCase
             []
         );
 
-        $mapCreated = $this->client->create($map);
+        $mapCreated = $this->getClient()->create($map);
 
         $this->assertStringStartsWith("dm_map_", $mapCreated->mapId);
         $this->assertSame([[42, -5], [50, 10]], $mapCreated->bounds);
