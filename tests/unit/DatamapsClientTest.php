@@ -6,6 +6,8 @@ use DatamapsPHP\DatamapsClient;
 use DatamapsPHP\DatamapsRequestFailedException;
 use DatamapsPHP\DTOs\Map;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class DatamapsClientTest extends TestCase
 {
@@ -17,6 +19,16 @@ class DatamapsClientTest extends TestCase
     protected function getFailingClient(): DatamapsClient
     {
         return FakeDatamapsClient::makeFailingMock();
+    }
+
+    public function testDefaultHttpClient(): void
+    {
+        $datamapsClient = new DatamapsClient();
+
+        $datamapsClientReflection = new ReflectionClass(DatamapsClient::class);
+        $httpClientValue = $datamapsClientReflection->getProperty("httpClient")->getValue($datamapsClient);
+
+        $this->assertInstanceOf(HttpClientInterface::class, $httpClientValue);
     }
 
     public function testGet(): void
