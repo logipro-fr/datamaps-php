@@ -26,12 +26,34 @@ class DatamapsClientTest extends TestCase
         $this->assertEquals("dm_map_0043af51c6be58d357db18474bbf", $map->mapId);
     }
 
+    public function testGetFailure(): void
+    {
+        $this->expectException(DatamapsRequestFailedException::class);
+        $this->expectExceptionMessage(
+            "Error on request to Datamaps. Map with mapId 'non_existing_map' not found"
+        );
+        $this->expectExceptionCode(404);
+
+        $this->getFailingClient()->get("non_existing_map");
+    }
+
     public function testSearch(): void
     {
         $maps = $this->getClient()->search(2);
 
         $this->assertCount(2, $maps);
         $this->assertNotEquals($maps[0]->mapId, $maps[1]->mapId);
+    }
+
+    public function testSearchFailure(): void
+    {
+        $this->expectException(DatamapsRequestFailedException::class);
+        $this->expectExceptionMessage(
+            "Error on request to Datamaps. Can't retrieve data from an empty repository"
+        );
+        $this->expectExceptionCode(422);
+
+        $this->getFailingClient()->search(1);
     }
 
     public function testCreate(): void

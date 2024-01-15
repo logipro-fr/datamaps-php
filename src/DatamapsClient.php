@@ -68,7 +68,14 @@ class DatamapsClient
         /** @var \stdClass $response */
         $response = json_decode($stringifiedResponse);
 
-        return $response->data;
+        if ($response->success === true) {
+            return $response->data;
+        } else {
+            throw new DatamapsRequestFailedException(
+                sprintf("Error on request to Datamaps. %s", $response->message),
+                $response->error_code
+            );
+        }
     }
 
     private function queryPOST(string $uriMethod, string $data): \stdClass

@@ -110,6 +110,39 @@ class FakeDatamapsClient
         ];
     }
 
+    public static function makeFailingMock(): DatamapsClient
+    {
+        $callable = Closure::fromCallable(
+            function (string $method, string $url, array $options): MockResponse {
+                if ($method == "GET") {
+                    if (str_contains($url, "display")) {
+                        return new MockResponse(
+                            self::makeFailureResponse(
+                                404,
+                                "Error on request to Datamaps. Map with mapId 'non_existing_map' not found"
+                            )
+                        );
+                    } else {
+                        return new MockResponse(
+                            self::makeFailureResponse(
+                                422,
+                                "Error on request to Datamaps. Can't retrieve data from an empty repository"
+                            )
+                        );
+                    }
+                } else {
+                    return new MockResponse(
+                        self::makeFailureResponse(
+                            403,
+                            "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found"
+                        )
+                    );
+                }
+            }
+        );
+        return new DatamapsClient(new MockHttpClient($callable));
+    }
+
     private static function makeFailureResponse(int $errorCode, string $message): string
     {
         return json_encode([
@@ -118,20 +151,5 @@ class FakeDatamapsClient
             "error_code" => $errorCode,
             "message" => $message
         ]);
-    }
-
-    public static function makeFailingMock(): DatamapsClient
-    {
-        $callable = Closure::fromCallable(
-            function (): MockResponse {
-                return new MockResponse(
-                    self::makeFailureResponse(
-                        403,
-                        "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found"
-                    )
-                );
-            }
-        );
-        return new DatamapsClient(new MockHttpClient($callable));
     }
 }
