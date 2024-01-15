@@ -1,6 +1,6 @@
 # Datamaps PHP
 
-A PHP Composant to use Datamaps API within your PHP project.
+A PHP component to use Datamaps API within your PHP project.
 
 **DatamapsApi** allows you to 
 * *get* a specific map via its ID, 

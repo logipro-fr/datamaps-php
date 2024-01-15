@@ -1,14 +1,15 @@
 {
     "name": "logipro/datamaps-php",
     "type": "library",
-    "description": "Query Datamaps API",
+    "description": "A PHP component to use Datamaps API within your PHP project.",
     "keywords": ["map", "datamaps"],
     "homepage": "https://github.com/logipro-fr/datamaps-php",
-    "license": "Copyrighted",
+    "license": "MIT",
     "minimum-stability": "stable",
     "authors": [
         {
-            "name": "Alban Bernard"
+            "name": "Alban Bernard",
+            "email": "alban.leandre.bernard@gmail.com"
         }
     ],
     "require": {
