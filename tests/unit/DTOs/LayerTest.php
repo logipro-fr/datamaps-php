@@ -8,6 +8,17 @@ use PHPUnit\Framework\TestCase;
 
 class LayerTest extends TestCase
 {
+    public function testCreate(): void
+    {
+        $layer = new Layer(
+            "My own Layer",
+            [ new Marker([1, 2], "...", "red") ]
+        );
+
+        $this->assertEquals("My own Layer", $layer->name);
+        $this->assertEquals([ new Marker([1, 2], "...", "red") ], $layer->markers);
+    }
+
     public function testCreateFromObject(): void
     {
         $markerObj1 = (object) array(

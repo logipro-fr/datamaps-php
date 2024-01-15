@@ -4,15 +4,11 @@ namespace DatamapsPHP\DTOs;
 
 class Layer
 {
-    public readonly string $name;
-    /** @var array<Marker> $markers */
-    public readonly array $markers;
-
     /** @param array<Marker> $markers */
-    private function __construct(string $name, array $markers)
-    {
-        $this->name = $name;
-        $this->markers = $markers;
+    public function __construct(
+        public readonly string $name,
+        public readonly array $markers
+    ) {
     }
 
     public static function createFromObject(\stdClass $object): Layer

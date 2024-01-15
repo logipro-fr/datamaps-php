@@ -8,13 +8,28 @@ use PHPUnit\Framework\TestCase;
 
 class MapTest extends TestCase
 {
+    public function testCreate(): void
+    {
+        $map = new Map(
+            "My own Map",
+            [[-1, 2], [2, 1]],
+            "2023-11-15T16:18:12",
+            [ new Layer("My own Layer", []) ]
+        );
+
+        $this->assertEquals("My own Map", $map->mapId);
+        $this->assertEquals([[-1, 2], [2, 1]], $map->bounds);
+        $this->assertEquals("2023-11-15T16:18:12", $map->createdAt);
+        $this->assertEquals([ new Layer("My own Layer", []) ], $map->layers);
+    }
+
     public function testCreateFromObject(): void
     {
         $object = (object) array(
             "mapId" => "My special Map",
             "bounds" => [[-1, -2], [2, 1]],
             "createdAt" => "2023-11-15T16:18:12",
-            "layers" => array( $this->createDefaultLayerAsObject() )
+            "layers" => [ $this->createDefaultLayerAsObject() ]
         );
 
         $map = Map::createFromObject($object);

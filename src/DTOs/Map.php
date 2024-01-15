@@ -4,23 +4,16 @@ namespace DatamapsPHP\DTOs;
 
 class Map
 {
-    public readonly string $mapId;
-    /** @var array<array<float>> $bounds */
-    public readonly array $bounds;
-    public readonly string $createdAt;
-    /** @var array<Layer> $layers */
-    public readonly array $layers;
-
     /**
      * @param array<array<float>> $bounds
      * @param array<Layer> $layers
      */
-    public function __construct(string $mapId, array $bounds, string $createdAt, array $layers)
-    {
-        $this->mapId = $mapId;
-        $this->bounds = $bounds;
-        $this->createdAt = $createdAt;
-        $this->layers = $layers;
+    public function __construct(
+        public readonly string $mapId,
+        public readonly array $bounds,
+        public readonly string $createdAt,
+        public readonly array $layers
+    ) {
     }
 
     public static function createFromObject(\stdClass $object): Map
