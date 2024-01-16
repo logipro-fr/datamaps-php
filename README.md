@@ -11,7 +11,9 @@ A PHP component to use Datamaps API within your PHP project.
 
 ## Install
 
-*use composer*
+```shell
+composer require logipro/datamaps-php
+```
 
 ## To contribute to Datamaps PHP
 ### Requirements:
