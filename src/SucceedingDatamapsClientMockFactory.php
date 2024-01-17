@@ -105,13 +105,13 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
         ];
     }
 
-    public static function getExpectedGetResponse(string $mapId): Map
+    public static function getExpectedResponseFromGet(string $mapId): Map
     {
         return Map::createFromObject((object) self::makeDefaultMap($mapId));
     }
 
     /** @return array<Map> */
-    public static function getExpectedSearchResponse(int $amount): array
+    public static function getExpectedResponseFromSearch(int $amount): array
     {
         $maps = [];
         for ($i = 0; $i < $amount; $i++) {
@@ -120,7 +120,7 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
         return $maps;
     }
 
-    public static function getExpectedCreateResponse(Map $mapToCreate): Map
+    public static function getExpectedResponseFromCreate(Map $mapToCreate): Map
     {
         return new Map(
             "dm_map_MapCreatedJustBefore",

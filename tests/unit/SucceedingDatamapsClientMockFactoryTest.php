@@ -18,19 +18,19 @@ class SucceedingDatamapsClientMockFactoryTest extends TestCase
 
         $mapFromGet = $client->get("myMapId");
         $this->assertEquals(
-            SucceedingDatamapsClientMockFactory::getExpectedGetResponse("myMapId"),
+            SucceedingDatamapsClientMockFactory::getExpectedResponseFromGet("myMapId"),
             $mapFromGet
         );
     }
 
-    public function testSearchREquest(): void
+    public function testSearchRequest(): void
     {
         $client = SucceedingDatamapsClientMockFactory::make();
         $this->assertHttpClientInstanceOf(MockHttpClient::class, $client);
 
         $mapsFromSearch = $client->search(2);
         $this->assertEquals(
-            SucceedingDatamapsClientMockFactory::getExpectedSearchResponse(2),
+            SucceedingDatamapsClientMockFactory::getExpectedResponseFromSearch(2),
             $mapsFromSearch
         );
     }
@@ -46,13 +46,13 @@ class SucceedingDatamapsClientMockFactoryTest extends TestCase
             "whatever_i_put_it_will_change",
             []
         ));
-        $mapFromSuccessfulCreate = SucceedingDatamapsClientMockFactory::getExpectedCreateResponse($mapToCreate);
-        $this->assertNotEquals($mapFromSuccessfulCreate->mapId, $mapToCreate->mapId);
+        $expectedMap = SucceedingDatamapsClientMockFactory::getExpectedResponseFromCreate($mapToCreate);
+        $this->assertNotEquals($expectedMap->mapId, $mapToCreate->mapId);
 
-        $this->assertEquals($mapFromSuccessfulCreate->mapId, $mapFromCreate->mapId);
-        $this->assertEquals($mapFromSuccessfulCreate->bounds, $mapFromCreate->bounds);
-        $this->assertNotEquals($mapFromSuccessfulCreate->createdAt, $mapFromCreate->createdAt);
-        $this->assertEquals($mapFromSuccessfulCreate->layers, $mapFromCreate->layers);
+        $this->assertEquals($expectedMap->mapId, $mapFromCreate->mapId);
+        $this->assertEquals($expectedMap->bounds, $mapFromCreate->bounds);
+        $this->assertNotEquals($expectedMap->createdAt, $mapFromCreate->createdAt);
+        $this->assertEquals($expectedMap->layers, $mapFromCreate->layers);
     }
 
     /** @param class-string<object> $expectedHttpClientClass */

@@ -11,6 +11,16 @@ use function Safe\json_encode;
 
 class FailingDatamapsClientMockFactory extends DatamapsClientFactory
 {
+    public const GET_ERROR_CODE = 404;
+    public const GET_ERROR_MESSAGE = "Error on request to Datamaps. Map with mapId 'non_existing_map' not found";
+
+    public const SEARCH_ERROR_CODE = 422;
+    public const SEARCH_ERROR_MESSAGE = "Error on request to Datamaps. Can't retrieve data from an empty repository";
+
+    public const CREATE_ERROR_CODE = 403;
+    public const CREATE_ERROR_MESSAGE =
+        "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found";
+
     public static function make(): DatamapsClient
     {
         return new DatamapsClient(self::makeHttpClientFailingMock());
@@ -23,22 +33,22 @@ class FailingDatamapsClientMockFactory extends DatamapsClientFactory
                 if (str_contains($url, "display/")) {
                     return new MockResponse(
                         self::makeFailureResponse(
-                            404,
-                            "Error on request to Datamaps. Map with mapId 'non_existing_map' not found"
+                            self::GET_ERROR_CODE,
+                            self::GET_ERROR_MESSAGE
                         )
                     );
                 } elseif (str_contains($url, "search/")) {
                     return new MockResponse(
                         self::makeFailureResponse(
-                            422,
-                            "Error on request to Datamaps. Can't retrieve data from an empty repository"
+                            self::SEARCH_ERROR_CODE,
+                            self::SEARCH_ERROR_MESSAGE
                         )
                     );
                 } else {
                     return new MockResponse(
                         self::makeFailureResponse(
-                            403,
-                            "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found"
+                            self::CREATE_ERROR_CODE,
+                            self::CREATE_ERROR_MESSAGE
                         )
                     );
                 }
@@ -55,29 +65,5 @@ class FailingDatamapsClientMockFactory extends DatamapsClientFactory
             "error_code" => $errorCode,
             "message" => $message
         ]);
-    }
-
-    public static function getExceptionFromFailingGet(): DatamapsRequestFailedException
-    {
-        return new DatamapsRequestFailedException(
-            "Error on request to Datamaps. Map with mapId 'non_existing_map' not found",
-            404
-        );
-    }
-
-    public static function getExceptionFromFailingSearch(): DatamapsRequestFailedException
-    {
-        return new DatamapsRequestFailedException(
-            "Error on request to Datamaps. Can't retrieve data from an empty repository",
-            422
-        );
-    }
-
-    public static function getExceptionFromFailingCreate(): DatamapsRequestFailedException
-    {
-        return new DatamapsRequestFailedException(
-            "Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found",
-            403
-        );
     }
 }

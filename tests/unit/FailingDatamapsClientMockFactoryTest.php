@@ -2,31 +2,38 @@
 
 namespace DatamapsPHP\Tests;
 
+use DatamapsPHP\DatamapsRequestFailedException;
 use DatamapsPHP\DTOs\Map;
 use DatamapsPHP\FailingDatamapsClientMockFactory;
 use PHPUnit\Framework\TestCase;
 
 class FailingDatamapsClientMockFactoryTest extends TestCase
 {
-    public function testFailingMockCreationForGet(): void
+    public function testGetRequest(): void
     {
-        $this->expectExceptionObject(FailingDatamapsClientMockFactory::getExceptionFromFailingGet());
+        $this->expectException(DatamapsRequestFailedException::class);
+        $this->expectExceptionCode(FailingDatamapsClientMockFactory::GET_ERROR_CODE);
+        $this->expectExceptionMessage(FailingDatamapsClientMockFactory::GET_ERROR_MESSAGE);
 
         $client = FailingDatamapsClientMockFactory::make();
         $client->get("id");
     }
 
-    public function testFailingMockCreationForSearch(): void
+    public function testSearchRequest(): void
     {
-        $this->expectExceptionObject(FailingDatamapsClientMockFactory::getExceptionFromFailingSearch());
+        $this->expectException(DatamapsRequestFailedException::class);
+        $this->expectExceptionCode(FailingDatamapsClientMockFactory::SEARCH_ERROR_CODE);
+        $this->expectExceptionMessage(FailingDatamapsClientMockFactory::SEARCH_ERROR_MESSAGE);
 
         $client = FailingDatamapsClientMockFactory::make();
         $client->search(2);
     }
 
-    public function testFailingMockCreationForCreate(): void
+    public function testCreateRequest(): void
     {
-        $this->expectExceptionObject(FailingDatamapsClientMockFactory::getExceptionFromFailingCreate());
+        $this->expectException(DatamapsRequestFailedException::class);
+        $this->expectExceptionCode(FailingDatamapsClientMockFactory::CREATE_ERROR_CODE);
+        $this->expectExceptionMessage(FailingDatamapsClientMockFactory::CREATE_ERROR_MESSAGE);
 
         $client = FailingDatamapsClientMockFactory::make();
         $client->create(new Map("", [], "", []));
