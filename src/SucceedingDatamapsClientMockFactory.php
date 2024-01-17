@@ -16,6 +16,8 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
     public const DEFAULT_DATE = "2024-01-01T01:01:01+00:00";
     public const DEFAULT_LAYERS = [];
 
+    private const SUCCESS_ERROR_CODE = 200;
+
     private static Map $lastMapCreated;
 
     private static function makeGetResponse(string $mapId): MockResponse
@@ -31,10 +33,13 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
 
     private static function makeSearchResponse(int $amount): MockResponse
     {
-        $maps = [];
-        for ($i = 0; $i < $amount; $i++) {
-            $maps[] = self::makeDefaultMap("dm_map_" . $i);
-        }
+        $range = range(0, $amount - 1);
+        $maps = array_map(
+            function ($value) {
+                return self::makeDefaultMap("dm_map_" . $value);
+            },
+            $range
+        );
 
         return new MockResponse(self::makeSuccessfulResponse(["maps" => $maps]));
     }
@@ -50,8 +55,7 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
 
         return new MockResponse(
             self::makeSuccessfulResponse([
-                "mapId" => self::$lastMapCreated->mapId,
-                "displayUrl" => DatamapsClient::GET_URI . self::$lastMapCreated->mapId
+                "mapId" => self::$lastMapCreated->mapId
             ])
         );
     }
@@ -62,7 +66,7 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
         return json_encode([
             "success" => true,
             "data" => $data,
-            "error_code" => 200,
+            "error_code" => self::SUCCESS_ERROR_CODE,
             "message" => ""
         ]);
     }
@@ -91,10 +95,13 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
     /** @return array<Map> */
     public static function getExpectedResponseFromSearch(int $amount): array
     {
-        $maps = [];
-        for ($i = 0; $i < $amount; $i++) {
-            $maps[] = self::getExpectedResponseFromGet("dm_map_" . $i);
-        }
+        $range = range(0, $amount - 1);
+        $maps = array_map(
+            function ($value) {
+                return self::getExpectedResponseFromGet("dm_map_" . $value);
+            },
+            $range
+        );
         return $maps;
     }
 
