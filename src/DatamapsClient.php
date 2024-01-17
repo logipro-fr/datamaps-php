@@ -11,7 +11,10 @@ use function Safe\json_encode;
 
 class DatamapsClient
 {
-    public const BASE_URI = "https://accidentprediction.fr/datamaps/api/v1/";
+    private const BASE_URI = "https://accidentprediction.fr/datamaps/api/v1/";
+    public const GET_URI = self::BASE_URI . "display/";
+    public const SEARCH_URI = self::BASE_URI . "search/";
+    public const CREATE_URI = self::BASE_URI . "create/";
 
     private HttpClientInterface $httpClient;
 
@@ -27,7 +30,7 @@ class DatamapsClient
 
     public function get(string $mapId): Map
     {
-        $data = $this->queryGET("display/" . $mapId);
+        $data = $this->queryGET(self::GET_URI . $mapId);
 
         return Map::createFromObject(
             $data
@@ -37,7 +40,7 @@ class DatamapsClient
     /** @return array<Map> */
     public function search(int $amount): array
     {
-        $data = $this->queryGET("search/" . $amount);
+        $data = $this->queryGET(self::SEARCH_URI . $amount);
 
         $maps = [];
         foreach ($data->maps as $map) {
@@ -49,7 +52,7 @@ class DatamapsClient
     public function create(Map $map): Map
     {
         $data = $this->queryPOST(
-            "create",
+            self::CREATE_URI,
             json_encode([
                 "bounds" => $map->bounds,
                 "layers" => $map->layers
@@ -61,9 +64,9 @@ class DatamapsClient
         return $map;
     }
 
-    private function queryGET(string $datamapsMethod): \stdClass
+    private function queryGET(string $uri): \stdClass
     {
-        $stringifiedResponse = $this->httpClient->request('GET', self::BASE_URI . $datamapsMethod)->getContent();
+        $stringifiedResponse = $this->httpClient->request('GET', $uri)->getContent();
 
         /** @var \stdClass $response */
         $response = json_decode($stringifiedResponse);
@@ -78,11 +81,11 @@ class DatamapsClient
         }
     }
 
-    private function queryPOST(string $datamapsMethod, string $data): \stdClass
+    private function queryPOST(string $uri, string $data): \stdClass
     {
         $stringifiedResponse = $this->httpClient->request(
             'POST',
-            self::BASE_URI . $datamapsMethod,
+            $uri,
             [
                 "body" => $data
             ]

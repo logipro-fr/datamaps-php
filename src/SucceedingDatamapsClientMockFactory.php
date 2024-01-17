@@ -2,58 +2,35 @@
 
 namespace DatamapsPHP;
 
-use Closure;
 use DatamapsPHP\DTOs\Map;
 use Safe\DateTimeImmutable;
-use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_encode;
 
 class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
 {
+    use HttpClientMockerForDatamaps;
+
+    public const DEFAULT_BOUNDS = [[42, -5], [50, 10]];
+    public const DEFAULT_DATE = "2024-01-01T01:01:01+00:00";
+    public const DEFAULT_LAYERS = [];
+
     private static Map $lastMapCreated;
 
-    public static function make(): DatamapsClient
+    private static function makeGetResponse(string $mapId): MockResponse
     {
-        return new DatamapsClient(self::makeHttpClientSuccessfulMock());
-    }
-
-    private static function makeHttpClientSuccessfulMock(): HttpClientInterface
-    {
-        $callable = Closure::fromCallable(
-            function (string $method, string $url, array $options): MockResponse {
-                if (str_contains($url, "datamaps/api/v1/" . "display/")) {
-                    return self::responseToGet($url);
-                } elseif (str_contains($url, "datamaps/api/v1/" . "search/")) {
-                    return self::responseToSearch($url);
-                } else {
-                    return self::responseToCreate($options);
-                }
-            }
-        );
-        return new MockHttpClient($callable);
-    }
-
-    private static function responseToGet(string $url): MockResponse
-    {
-        $explodedUrl = explode("/", $url);
-        $id = end($explodedUrl);
-
         if (isset(self::$lastMapCreated)) {
-            if ($id == self::$lastMapCreated->mapId) {
+            if ($mapId == self::$lastMapCreated->mapId) {
                 return new MockResponse(self::makeSuccessfulResponse((array) self::$lastMapCreated));
             }
         }
 
-        return new MockResponse(self::makeSuccessfulResponse(self::makeDefaultMap($id)));
+        return new MockResponse(self::makeSuccessfulResponse(self::makeDefaultMap($mapId)));
     }
 
-    private static function responseToSearch(string $url): MockResponse
+    private static function makeSearchResponse(int $amount): MockResponse
     {
-        $explodedUrl = explode("/", $url);
-        $amount = end($explodedUrl);
         $maps = [];
         for ($i = 0; $i < $amount; $i++) {
             $maps[] = self::makeDefaultMap("dm_map_" . $i);
@@ -62,23 +39,19 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
         return new MockResponse(self::makeSuccessfulResponse(["maps" => $maps]));
     }
 
-    /** @param array<string> $options */
-    private static function responseToCreate(array $options): MockResponse
+    private static function makeCreateResponse(\stdClass $body): MockResponse
     {
-        /** @var \stdClass $object */
-        $object = json_decode($options["body"]);
-
         self::$lastMapCreated = new Map(
             "dm_map_MapCreatedJustBefore",
-            $object->bounds,
+            $body->bounds,
             "2024-01-01T01:01:01+00:00",
-            $object->layers
+            $body->layers
         );
 
         return new MockResponse(
             self::makeSuccessfulResponse([
                 "mapId" => self::$lastMapCreated->mapId,
-                "displayUrl" => DatamapsClient::BASE_URI . "display/" . self::$lastMapCreated->mapId
+                "displayUrl" => DatamapsClient::GET_URI . self::$lastMapCreated->mapId
             ])
         );
     }
@@ -99,15 +72,20 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
     {
         return [
             "mapId" => $id,
-            "bounds" => [[42,-5], [50,10]],
-            "createdAt" => "2024-01-01T01:01:01+00:00",
-            "layers" => []
+            "bounds" => self::DEFAULT_BOUNDS,
+            "createdAt" => self::DEFAULT_DATE,
+            "layers" => self::DEFAULT_LAYERS
         ];
     }
 
     public static function getExpectedResponseFromGet(string $mapId): Map
     {
-        return Map::createFromObject((object) self::makeDefaultMap($mapId));
+        return new Map(
+            $mapId,
+            self::DEFAULT_BOUNDS,
+            self::DEFAULT_DATE,
+            self::DEFAULT_LAYERS
+        );
     }
 
     /** @return array<Map> */
@@ -115,7 +93,7 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
     {
         $maps = [];
         for ($i = 0; $i < $amount; $i++) {
-            $maps[] = Map::createFromObject((object) self::makeDefaultMap("dm_map_" . $i));
+            $maps[] = self::getExpectedResponseFromGet("dm_map_" . $i);
         }
         return $maps;
     }
