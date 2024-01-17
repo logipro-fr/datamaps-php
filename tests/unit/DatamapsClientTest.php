@@ -5,6 +5,8 @@ namespace DatamapsPHP\Tests;
 use DatamapsPHP\DatamapsClient;
 use DatamapsPHP\DatamapsRequestFailedException;
 use DatamapsPHP\DTOs\Map;
+use DatamapsPHP\FailingDatamapsClientMockFactory;
+use DatamapsPHP\SucceedingDatamapsClientMockFactory;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -13,12 +15,12 @@ class DatamapsClientTest extends TestCase
 {
     protected function getClient(): DatamapsClient
     {
-        return FakeDatamapsClient::makeMock();
+        return SucceedingDatamapsClientMockFactory::make();
     }
 
     protected function getFailingClient(): DatamapsClient
     {
-        return FakeDatamapsClient::makeFailingMock();
+        return FailingDatamapsClientMockFactory::make();
     }
 
     public function testDefaultHttpClient(): void

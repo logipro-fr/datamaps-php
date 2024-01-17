@@ -61,9 +61,9 @@ class DatamapsClient
         return $map;
     }
 
-    private function queryGET(string $uriMethod): \stdClass
+    private function queryGET(string $datamapsMethod): \stdClass
     {
-        $stringifiedResponse = $this->httpClient->request('GET', self::BASE_URI . $uriMethod)->getContent();
+        $stringifiedResponse = $this->httpClient->request('GET', self::BASE_URI . $datamapsMethod)->getContent();
 
         /** @var \stdClass $response */
         $response = json_decode($stringifiedResponse);
@@ -78,11 +78,11 @@ class DatamapsClient
         }
     }
 
-    private function queryPOST(string $uriMethod, string $data): \stdClass
+    private function queryPOST(string $datamapsMethod, string $data): \stdClass
     {
         $stringifiedResponse = $this->httpClient->request(
             'POST',
-            self::BASE_URI . $uriMethod,
+            self::BASE_URI . $datamapsMethod,
             [
                 "body" => $data
             ]

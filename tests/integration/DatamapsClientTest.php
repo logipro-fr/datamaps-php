@@ -3,18 +3,19 @@
 namespace DatamapsPHP\Integration;
 
 use DatamapsPHP\DatamapsClient;
+use DatamapsPHP\DatamapsClientFactory;
 use DatamapsPHP\Tests\DatamapsClientTest as UnitDatamapsClientTest;
 
 class DatamapsClientTest extends UnitDatamapsClientTest
 {
     protected function getClient(): DatamapsClient
     {
-        return new DatamapsClient();
+        return DatamapsClientFactory::make();
     }
 
     protected function getFailingClient(): DatamapsClient
     {
-        return $this->getClient();
+        return DatamapsClientFactory::make();
     }
 
     public function testSearchFailure(): void
