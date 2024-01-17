@@ -7,7 +7,7 @@ A PHP component to use Datamaps API within your PHP project.
 * *search* the last maps created,
 * *create* a new map.
 
-**FakeDatamapsApi** is able to give you mocked versions of **DatamapsApi** for your unit tests.
+Check **DatamapsClientFactories** to obtain mocked versions of **DatamapsApi** for your unit tests.
 
 ## Install
 
