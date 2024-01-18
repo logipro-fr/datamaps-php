@@ -10,12 +10,13 @@ A PHP component to use Datamaps' API within your PHP project.
 
 A map is defined by 4 values :
 * `string $mapId` is the id of the map.
-* `string $createdAt` is the date of creation of the map, with format ATOM.
+* `string $createdAt` is the creation date and time of the map, with format ATOM.
 * `[[float, float], [float, float]] $bounds` sets the limit of the map.
-* `Layer[] $layers` contains every layer.
+* `Layer[] $layers` contains every layer. Each of them has a `string $name` and an array of `Marker` (storing a geographic point `[float, float] $point`, a `string $description` and a `string $color`).
 
 
 Check DatamapsClient factories to obtain mocked versions of **DatamapsClient** for your tests.
+
 
 ## Usage
 
@@ -28,13 +29,13 @@ Check DatamapsClient factories to obtain mocked versions of **DatamapsClient** f
 ### In test files
 
 **SucceedingDatamapsClientMockFactory** allows to test **DatamapsClient** if everything goes **right**.
-* `make()` creates a mock of **DatamapsClient** that will always respond without failures.
+* `make()` creates a mock of **DatamapsClient** that will **never** respond with failures.
 * `getExpectedResponseFromGet(string $mapId)` returns the map the mocked version of the `get($mapId) `method will return.
 * `getExpectedResponseFromSearch(int $amount)` returns the map the mocked version of the `search($amount) `method will return.
 * `getExpectedResponseFromCreate(Map $map)` returns the map the mocked version of the `create($map) `method will return.
 
 **FailingDatamapsClientMockFactory** allows to test **DatamapsClient** if everything goes **wrong**.
-* `make()` creates a mock of **DatamapsClient** that will always respond with failures.
+* `make()` creates a mock of **DatamapsClient** that will **always** respond with failures.
 * `get($mapId)` will always result on `Error on request to Datamaps. Map with mapId $mapId not found`.
 * `search($amount)` will always result on `Error on request to Datamaps. Can't retrieve data from an empty repository`.
 * `create($map)` will always result on `Error on request to Datamaps. /bounds: Array should have at least 2 items, 1 found`.
