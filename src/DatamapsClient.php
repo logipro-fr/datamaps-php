@@ -14,7 +14,7 @@ class DatamapsClient
     private const BASE_URI = "https://accidentprediction.fr/datamaps/api/v1/";
     public const GET_URI = self::BASE_URI . "display/";
     public const SEARCH_URI = self::BASE_URI . "search/";
-    public const CREATE_URI = self::BASE_URI . "create/";
+    public const CREATE_URI = self::BASE_URI . "create";
 
     private HttpClientInterface $httpClient;
 

@@ -12,9 +12,6 @@
       <directory suffix="Test.php">tests/integration</directory>
     </testsuite>
   </testsuites>
-  <php>
-    <env name="DATABASE_URL" value='mysql://root:logipro@datamaps-mariadb:3306/datamaps?serverVersion=10.9.3-MariaDB&amp;charset=utf8mb4' force="true" />
-  </php>
   <source>
     <include>
       <directory suffix=".php">src</directory>
