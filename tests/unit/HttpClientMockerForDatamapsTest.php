@@ -2,7 +2,7 @@
 
 namespace DatamapsPHP\Tests;
 
-use DatamapsPHP\DatamapsClient;
+use DatamapsPHP\ApiUrls;
 use DatamapsPHP\HttpClientMockerForDatamaps;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -16,7 +16,7 @@ class HttpClientMockerForDatamapsTest extends TestCase
     public function testGetRequest(): void
     {
         $httpClient = self::makeHttpClient();
-        $response = $httpClient->request("GET", DatamapsClient::GET_URI . "mapIdToTestGet");
+        $response = $httpClient->request("GET", (new ApiUrls())->getUri() . "mapIdToTestGet");
         $this->assertEquals("GET request on mapIdToTestGet", $response->getContent());
     }
 
@@ -28,7 +28,7 @@ class HttpClientMockerForDatamapsTest extends TestCase
     public function testSearchRequest(): void
     {
         $httpClient = self::makeHttpClient();
-        $response = $httpClient->request("GET", DatamapsClient::SEARCH_URI . "2");
+        $response = $httpClient->request("GET", (new ApiUrls())->searchUri() . "2");
         $this->assertEquals("SEARCH request for 2 maps", $response->getContent());
     }
 
@@ -40,7 +40,7 @@ class HttpClientMockerForDatamapsTest extends TestCase
     public function testCreateRequest(): void
     {
         $httpClient = self::makeHttpClient();
-        $response = $httpClient->request("POST", DatamapsClient::CREATE_URI, [
+        $response = $httpClient->request("POST", (new ApiUrls())->createUri(), [
             "body" => json_encode((object) [
                 "bounds" => [],
                 "layers" => []

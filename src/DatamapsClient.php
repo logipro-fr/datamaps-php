@@ -11,15 +11,11 @@ use function Safe\json_encode;
 
 class DatamapsClient
 {
-    private const BASE_URI = "https://accidentprediction.fr/datamaps/api/v1/";
-    public const GET_URI = self::BASE_URI . "display/";
-    public const SEARCH_URI = self::BASE_URI . "search/";
-    public const CREATE_URI = self::BASE_URI . "create";
-
     private HttpClientInterface $httpClient;
 
     public function __construct(
-        ?HttpClientInterface $httpClient = null
+        ?HttpClientInterface $httpClient = null,
+        private ApiUrls $apiUrls = new ApiUrls()
     ) {
         if ($httpClient == null) {
             $this->httpClient = HttpClient::create();
@@ -30,7 +26,7 @@ class DatamapsClient
 
     public function get(string $mapId): Map
     {
-        $data = $this->queryGET(self::GET_URI . $mapId);
+        $data = $this->queryGET($this->apiUrls->getUri() . $mapId);
 
         return Map::createFromObject(
             $data
@@ -40,7 +36,7 @@ class DatamapsClient
     /** @return array<Map> */
     public function search(int $amount): array
     {
-        $data = $this->queryGET(self::SEARCH_URI . $amount);
+        $data = $this->queryGET($this->apiUrls->searchUri() . $amount);
 
         $maps = [];
         foreach ($data->maps as $map) {
@@ -52,7 +48,7 @@ class DatamapsClient
     public function create(Map $map): Map
     {
         $data = $this->queryPOST(
-            self::CREATE_URI,
+            $this->apiUrls->createUri(),
             json_encode([
                 "bounds" => $map->bounds,
                 "layers" => $map->layers
