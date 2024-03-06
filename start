@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cd docker
-docker compose up -d
-cd ..
+(
+    cd docker || exit
+    docker compose up -d
+)
 

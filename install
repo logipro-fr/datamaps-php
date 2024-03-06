@@ -5,8 +5,9 @@ if [ ! -d "$DIR_VAR" ]; then
     mkdir $DIR_VAR
 fi
 
-cd docker 
-docker compose build
-cd ..
+(
+    cd docker || exit
+    docker compose build
+)
 
 bin/composer install

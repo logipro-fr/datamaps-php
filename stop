@@ -1,5 +1,6 @@
 #!/bin/bash
 
-cd docker
-docker compose down
-cd ..
+(
+    cd docker || exit
+    docker compose down
+)

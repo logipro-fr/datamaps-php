@@ -1,5 +1,6 @@
 #!/bin/bash
-echo ${COMPOSER_HOME:-$HOME/.composer}
+
+echo "${COMPOSER_HOME:-$HOME/.composer}"
 if [ -t 0 ] ; then
     moinsit='-it'
 else
@@ -8,4 +9,4 @@ fi
 docker run ${moinsit} --rm \
   --volume $PWD:/app \
   --user 1000:1000 \
-  composer:2.5.5 $@
+  composer:2.5.5 "$@"

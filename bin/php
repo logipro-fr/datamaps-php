@@ -1,9 +1,22 @@
-#!/bin/sh
+#!/bin/bash
 
-DIR_VAR=../infra
-if [ ! -d "$DIR_VAR" ]; then
-    echo "L'infrastructure doit être installée. Peut être avez vous oublié de lancer ./install ?"
-    exit
+(docker container ls | grep datamaps-php)
+status=$?
+if [ $status = 0 ]
+then
+docker exec \
+    -ti \
+    -e APP_ENV=test \
+    datamaps-php php "$@"
+else
+## execution de PHP de manière autonome (pas besoin d'un environnement de containers)
+docker run \
+    --init \
+    --rm \
+    -ti \
+    --name datamaps-php-running-script \
+    -v "$PWD":"$PWD" \
+    --user 1000:1000 \
+    -w "$PWD" \
+    datamaps-php php "$@"
 fi
-
-../infra/bin/php $@
