@@ -3,6 +3,7 @@
 namespace DatamapsPHP;
 
 use Closure;
+use DatamapsPHP\DTOs\Layer;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -29,7 +30,8 @@ trait HttpClientMockerForDatamaps
                     $amount = end($explodedUrl);
                     return self::makeSearchResponse(intval($amount));
                 } elseif (str_starts_with($url, (new ApiUrls())->createUri())) {
-                    /** @var \stdClass $body */
+                    /** @var array<string,string> $options */
+                    /** @var object{bounds:array<array<float>>,layers:array<Layer>}&\stdClass $body */
                     $body = json_decode($options["body"]);
                     return self::makeCreateResponse($body);
                 } else {

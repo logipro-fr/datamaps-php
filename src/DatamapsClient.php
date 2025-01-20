@@ -26,6 +26,7 @@ class DatamapsClient
 
     public function get(string $mapId): Map
     {
+        /** @var \stdClass&object{layers:array<\stdClass>,mapId:string,bounds:array<array<float>>,createdAt:string} $data */
         $data = $this->queryGET($this->apiUrls->getUri() . $mapId);
 
         return Map::createFromObject(
@@ -36,10 +37,12 @@ class DatamapsClient
     /** @return array<Map> */
     public function search(int $amount): array
     {
+        /** @var \stdClass&object{maps:iterable<mixed>} $data */
         $data = $this->queryGET($this->apiUrls->searchUri() . $amount);
 
         $maps = [];
         foreach ($data->maps as $map) {
+            /** @var  \stdClass&object{layers:array<\stdClass>,mapId:string,bounds:array<array<float>>,createdAt:string} $map */
             $maps[] = Map::createFromObject($map);
         }
         return $maps;
@@ -47,6 +50,7 @@ class DatamapsClient
 
     public function create(Map $map): Map
     {
+        /** @var \stdClass&object{bounds:array<mixed>,layers:array<mixed>,mapId:string} */
         $data = $this->queryPOST(
             $this->apiUrls->createUri(),
             json_encode([
@@ -64,7 +68,7 @@ class DatamapsClient
     {
         $stringifiedResponse = $this->httpClient->request('GET', $uri)->getContent();
 
-        /** @var \stdClass $response */
+        /** @var \stdClass&object{success:bool,data:\stdClass,message:string,error_code:int} $response */
         $response = json_decode($stringifiedResponse);
 
         if ($response->success === true) {
@@ -87,7 +91,7 @@ class DatamapsClient
             ]
         )->getContent();
 
-        /** @var \stdClass $response */
+        /** @var \stdClass&object{success:bool,data:\stdClass,message:string,error_code:int} $response */
         $response = json_decode($stringifiedResponse);
 
         if ($response->success === true) {

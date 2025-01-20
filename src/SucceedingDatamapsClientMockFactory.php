@@ -2,6 +2,7 @@
 
 namespace DatamapsPHP;
 
+use DatamapsPHP\DTOs\Layer;
 use DatamapsPHP\DTOs\Map;
 use Safe\DateTimeImmutable;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -44,6 +45,7 @@ class SucceedingDatamapsClientMockFactory extends DatamapsClientFactory
         return new MockResponse(self::makeSuccessfulResponse(["maps" => $maps]));
     }
 
+    /** @param \stdClass&object{bounds:array<array<float>>,layers:array<Layer>} $body */
     private static function makeCreateResponse(\stdClass $body): MockResponse
     {
         self::$lastMapCreated = new Map(

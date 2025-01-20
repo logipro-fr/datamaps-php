@@ -42,6 +42,7 @@ class MapTest extends TestCase
         ], $map->layers);
     }
 
+    /** @return \stdClass&object{markers:array<object{point:array{int,int},description:string,color:string}>, name:string} */
     private function createDefaultLayerAsObject(): \stdClass
     {
         $markerObj1 = (object) array(

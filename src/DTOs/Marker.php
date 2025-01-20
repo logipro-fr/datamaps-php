@@ -12,6 +12,7 @@ class Marker
     ) {
     }
 
+    /** @param \stdClass&object{point:array<float>,description:string,color:string} $object */
     public static function createFromObject(\stdClass $object): Marker
     {
         return new self(
