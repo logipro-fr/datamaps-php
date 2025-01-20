@@ -49,6 +49,7 @@ class HttpClientMockerForDatamapsTest extends TestCase
         $this->assertEquals("CREATE request with bounds as [] and layers as []", $response->getContent());
     }
 
+    /** @param \stdClass&object{bounds:array<string>,layers:array<string>} $body */
     protected static function makeCreateResponse(\stdClass $body): MockResponse
     {
         return new MockResponse(
